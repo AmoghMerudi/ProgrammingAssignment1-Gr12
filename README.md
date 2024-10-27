@@ -14,9 +14,9 @@ This project visualizes movies and their genres by creating interactive star cha
 ---
 
 ## **Project Structure**  
-├── sketch.js               - Main entry point for the p5.js sketch; handles setup, data loading, and rendering.
-├── movie.js                - Defines the Movie class to represent individual movies with size and brightness logic.
-├── genre.js                - Defines the Genre class to organize and display movies by genre.
-├── tmdb_5000_movies.csv    - CSV dataset with movie information (must be placed in the root directory).
-└── index.html              - HTML file to run the project in a browser.
+- sketch.js               - Main entry point for the p5.js sketch; handles setup, data loading, and rendering.
+- movie.js                - Defines the Movie class to represent individual movies with size and brightness logic.
+- genre.js                - Defines the Genre class to organize and display movies by genre.
+- tmdb_5000_movies.csv    - CSV dataset with movie information (must be placed in the root directory).
+- index.html              - HTML file to run the project in a browser.
 
