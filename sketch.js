@@ -83,7 +83,7 @@ function parseGenres(genreStr) {
 }
 
 /**
- * P5.js draw function. Draws the genres and movie details.
+ * Draws the genres and movie details.
  */
 function draw() {
     background(123);
@@ -119,7 +119,6 @@ function displayMovieDetails() {
 }
 
 /**
- * P5.js mousePressed function.
  * Stores the mouse location and checks if a movie was clicked.
  */
 function mousePressed() {

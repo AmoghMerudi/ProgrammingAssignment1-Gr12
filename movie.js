@@ -9,7 +9,7 @@ class Movie {
      * @constructor
      * @param {String} title - Title of the movie.
      * @param {Number} popularity - Popularity score of the movie.
-     * @param {Number} revenue - Revenue of the movie.
+     * @param {Number} revenue - Revenue earned by the movie.
      */
     constructor(title, popularity, revenue) {
         this.title = title;
