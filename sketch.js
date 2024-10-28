@@ -50,13 +50,79 @@ function handleData() {
 
         const movie = new Movie(title, popularity, revenue);
 
-        genreArr.forEach(genre => {
-            if (!genres[genre]) genres[genre] = new Genre(genre);
+        for (let i = 0; i < genreArr.length; i++) {
+            const genre = genreArr[i];
+            if (!genres[genre]) {
+                genres[genre] = new Genre(genre);
+            }
             genres[genre].addMovie(movie);
-        });
+        }
+        
     });
 
-    console.log(genres);
+    if (!table || !table.rows) {
+        console.error("Data table is empty or not loaded correctly.");
+        return;
+    }
+
+    table.rows.forEach((row, index) => {
+        // Validate the title
+        let title;
+        try {
+            title = row.getString("original_title");
+            if (!title) throw new Error("Missing title");
+        } 
+        catch (error) {
+            console.warn(`Row ${index}: Invalid title data. Using 'Unknown'.`);
+            title = "Unknown";
+        }
+
+        // Validate popularity
+        let popularity;
+        try {
+            popularity = row.getNum("popularity");
+            if (isNaN(popularity)) throw new Error("Popularity is not a number");
+        } 
+        catch (error) {
+            console.warn(`Row ${index}: Invalid popularity data. Using 0.`);
+            popularity = 0;
+        }
+
+        // Validate revenue
+        let revenue;
+        try {
+            revenue = row.getNum("revenue");
+            if (isNaN(revenue)) throw new Error("Revenue is not a number");
+        } 
+        catch (error) {
+            console.warn(`Row ${index}: Invalid revenue data. Using 0.`);
+            revenue = 0;
+        }
+
+        // Parse and validate genres
+        let genreArr;
+        try {
+            genreArr = parseGenres(row.getString("genres"));
+            if (!Array.isArray(genreArr) || genreArr.length === 0) throw new Error("Genres parsing failed");
+        } 
+        catch (error) {
+            console.warn(`Row ${index}: Invalid genre data. Using 'Unknown'.`);
+            genreArr = ["Unknown"];
+        }
+
+        // Create a movie instance and add it to the appropriate genres
+        const movie = new Movie(title, popularity, revenue);
+        for (let i = 0; i < genreArr.length; i++) {
+            const genre = genreArr[i];
+            if (!genres[genre]) {
+                genres[genre] = new Genre(genre);
+            }
+            genres[genre].addMovie(movie);
+        }
+        
+    });
+
+    console.log("Data processed successfully:", genres);
 }
 
 /**
