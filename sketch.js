@@ -2,11 +2,13 @@
  * Main sketch file for displaying genres and movies.
  */
 
-let table;
-let genres = {};
-let selectedMovie = null;
-let circleLocationX = null;
-let circleLocationY = null;
+let table; // Holds the loaded CSV data for movies
+
+let genres = {}; // Stores each genre as a key with an associated Genre object containing movies in that genre
+
+let selectedMovie = null; // Stores the currently selected movie object when a movie is clicked, or null if no movie is selected
+let circleLocationX = null; // Stores the X-coordinate of the mouse click for displaying movie details
+let circleLocationY = null; // Stores the Y-coordinate of the mouse click for displaying movie details
 
 /**
  * Loads the CSV file containing movie data.
@@ -50,90 +52,31 @@ function handleData() {
 
         const movie = new Movie(title, popularity, revenue);
 
+        // Loop through each genre in the genreArr Array
         for (let i = 0; i < genreArr.length; i++) {
             const genre = genreArr[i];
+
             if (!genres[genre]) {
-                genres[genre] = new Genre(genre);
+                genres[genre] = new Genre(genre); //If a genre does not exist, create a new Genre instance and add it to the genres object
             }
             genres[genre].addMovie(movie);
         }
         
     });
 
-    if (!table || !table.rows) {
-        console.error("Data table is empty or not loaded correctly.");
-        return;
-    }
-
-    table.rows.forEach((row, index) => {
-        // Validate the title
-        let title;
-        try {
-            title = row.getString("original_title");
-            if (!title) throw new Error("Missing title");
-        } 
-        catch (error) {
-            console.warn(`Row ${index}: Invalid title data. Using 'Unknown'.`);
-            title = "Unknown";
-        }
-
-        // Validate popularity
-        let popularity;
-        try {
-            popularity = row.getNum("popularity");
-            if (isNaN(popularity)) throw new Error("Popularity is not a number");
-        } 
-        catch (error) {
-            console.warn(`Row ${index}: Invalid popularity data. Using 0.`);
-            popularity = 0;
-        }
-
-        // Validate revenue
-        let revenue;
-        try {
-            revenue = row.getNum("revenue");
-            if (isNaN(revenue)) throw new Error("Revenue is not a number");
-        } 
-        catch (error) {
-            console.warn(`Row ${index}: Invalid revenue data. Using 0.`);
-            revenue = 0;
-        }
-
-        // Parse and validate genres
-        let genreArr;
-        try {
-            genreArr = parseGenres(row.getString("genres"));
-            if (!Array.isArray(genreArr) || genreArr.length === 0) throw new Error("Genres parsing failed");
-        } 
-        catch (error) {
-            console.warn(`Row ${index}: Invalid genre data. Using 'Unknown'.`);
-            genreArr = ["Unknown"];
-        }
-
-        // Create a movie instance and add it to the appropriate genres
-        const movie = new Movie(title, popularity, revenue);
-        for (let i = 0; i < genreArr.length; i++) {
-            const genre = genreArr[i];
-            if (!genres[genre]) {
-                genres[genre] = new Genre(genre);
-            }
-            genres[genre].addMovie(movie);
-        }
-        
-    });
-
-    console.log("Data processed successfully:", genres);
+    console.log(genres);
 }
 
 /**
  * Parses the genres string from the movie data.
- * @param {String} genreStr - JSON string of genres.
- * @returns {String[]} Array of genre names.
+ * @param {string} genreStr - JSON string of genres.
+ * @returns {string[]} Array of genre names.
  */
 function parseGenres(genreStr) {
     try {
         return JSON.parse(genreStr).map(g => g.name);
-    } catch (error) {
+    } 
+    catch (error) {
         console.warn("Failed to parse genres:", genreStr);
         return ["Unknown"];
     }
@@ -176,15 +119,20 @@ function displayMovieDetails() {
 }
 
 /**
- * P5.js mousePressed function. Checks if a movie is clicked.
+ * P5.js mousePressed function.
+ * Stores the mouse location and checks if a movie was clicked.
  */
 function mousePressed() {
+    // Store the current mouse X and Y coordinates for displaying movie details
     circleLocationX = mouseX;
     circleLocationY = mouseY;
 
+    // Loop through each genre and check if a movie was clicked
     selectedMovie = Object.values(genres)
-        .map(genre => genre.checkClick(mouseX, mouseY))
-        .find(movie => movie !== null);
-    
+        .map(genre => genre.checkClick(mouseX, mouseY)) 
+        .find(movie => movie !== null); 
+
+    // Redraw the canvas to display any updates, such as selected movie details
     redraw();
 }
+

@@ -36,19 +36,21 @@ class Genre {
         textSize(50);
         text(this.name, 0, 0);
 
-        const radius = 500;
+        const radius = 400; // Define the radius for the circular layout of stars
         const angleStep = TWO_PI / this.movies.length;
         this.starPositions = [];
 
+        // Loop through each movie to calculate its position and display it
         this.movies.forEach((movie, i) => {
             const angle = i * angleStep;
             const starX = radius * cos(angle);
             const starY = radius * sin(angle);
 
-            fill(movie.getBrightness());
+            fill(movie.getColor()); // Set the fill color based on the movie's revenue
             noStroke();
-            ellipse(starX, starY, movie.getStarSize());
+            ellipse(starX, starY, movie.getStarSize()); // Draw the star representing the movie
 
+            // Stores the position and details of the star for later click detection
             this.starPositions.push({
                 x: starX + x,
                 y: starY + y,
@@ -58,7 +60,6 @@ class Genre {
         });
         pop();
     }
-
     /**
      * Checks if a movie was clicked based on mouse position.
      * @param {Number} mouseX - Mouse X-coordinate.
