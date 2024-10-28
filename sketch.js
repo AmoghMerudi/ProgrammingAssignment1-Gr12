@@ -61,8 +61,8 @@ function handleData() {
 
 /**
  * Parses the genres string from the movie data.
- * @param {string} genreStr - JSON string of genres.
- * @returns {string[]} Array of genre names.
+ * @param {String} genreStr - JSON string of genres.
+ * @returns {String[]} Array of genre names.
  */
 function parseGenres(genreStr) {
     try {

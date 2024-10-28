@@ -7,9 +7,9 @@ class Movie {
      * Creates a new Movie instance.
      * 
      * @constructor
-     * @param {string} title - Title of the movie.
-     * @param {number} popularity - Popularity score of the movie.
-     * @param {number} revenue - Revenue of the movie.
+     * @param {String} title - Title of the movie.
+     * @param {Number} popularity - Popularity score of the movie.
+     * @param {Number} revenue - Revenue of the movie.
      */
     constructor(title, popularity, revenue) {
         this.title = title;
@@ -19,7 +19,7 @@ class Movie {
 
     /**
      * Calculates the size of the star based on popularity.
-     * @returns {number} Star size.
+     * @returns {Number} Star size.
      */
     getStarSize() {
         return Math.max(2, Math.round(this.popularity / 5));
@@ -27,7 +27,7 @@ class Movie {
 
     /**
      * Computes the brightness of the star based on revenue.
-     * @returns {string} RGB color string representing brightness.
+     * @returns {String} RGB color string representing brightness.
      */
     getBrightness() {
         const revenueMax = 500000000;
@@ -48,7 +48,7 @@ class Movie {
 
     /**
      * Retrieves the color range based on value.
-     * @param {number} value - Normalized revenue value.
+     * @param {Number} value - Normalized revenue value.
      * @param {Object[]} stops - Array of color stops.
      * @returns {Object[]} Start and end color stop objects.
      */
@@ -63,10 +63,10 @@ class Movie {
 
     /**
      * Interpolates between two colors.
-     * @param {number} value - Normalized value between 0 and 1.
+     * @param {Number} value - Normalized value between 0 and 1.
      * @param {Object} start - Start color stop.
      * @param {Object} end - End color stop.
-     * @returns {string} Interpolated RGB color.
+     * @returns {String} Interpolated RGB color.
      */
     interpolateColor(value, start, end) {
         const ratio = (value - start.offset) / (end.offset - start.offset);

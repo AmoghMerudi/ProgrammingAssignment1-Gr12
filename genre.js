@@ -7,7 +7,7 @@ class Genre {
      * Creates a new Genre instance.
      * 
      * @constructor
-     * @param {string} name - Name of the genre.
+     * @param {String} name - Name of the genre.
      */
     constructor(name) {
         this.name = name;
@@ -25,8 +25,8 @@ class Genre {
 
     /**
      * Displays the genre and its movies on the canvas.
-     * @param {number} x - X-coordinate for display.
-     * @param {number} y - Y-coordinate for display.
+     * @param {Number} x - X-coordinate for display.
+     * @param {Number} y - Y-coordinate for display.
      */
     display(x, y) {
         push();
@@ -34,9 +34,9 @@ class Genre {
         textAlign(CENTER);
         fill(255);
         textSize(50);
-        text(this.name, 0, -30);
+        text(this.name, 0, 0);
 
-        const radius = 400;
+        const radius = 500;
         const angleStep = TWO_PI / this.movies.length;
         this.starPositions = [];
 
@@ -61,8 +61,8 @@ class Genre {
 
     /**
      * Checks if a movie was clicked based on mouse position.
-     * @param {number} mouseX - Mouse X-coordinate.
-     * @param {number} mouseY - Mouse Y-coordinate.
+     * @param {Number} mouseX - Mouse X-coordinate.
+     * @param {Number} mouseY - Mouse Y-coordinate.
      * @returns {Movie|null} The clicked movie or null if none clicked.
      */
     checkClick(mouseX, mouseY) {
