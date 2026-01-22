@@ -9,6 +9,12 @@ let genres = {}; // Stores each genre as a key with an associated Genre object c
 let selectedMovie = null; // Stores the currently selected movie object when a movie is clicked, or null if no movie is selected
 let circleLocationX = null; // Stores the X-coordinate of the mouse click for displaying movie details
 let circleLocationY = null; // Stores the Y-coordinate of the mouse click for displaying movie details
+let hoveredMovie = null; // Stores the currently hovered movie object
+let hoverTargetX = null; // Target X for smooth hover label
+let hoverTargetY = null; // Target Y for smooth hover label
+let hoverX = null; // Smoothed X for hover label
+let hoverY = null; // Smoothed Y for hover label
+let hoverAlpha = 0; // Smoothed alpha for hover label
 
 /**
  * Loads the CSV file containing movie data.
@@ -86,20 +92,55 @@ function parseGenres(genreStr) {
  * Draws the genres and movie details.
  */
 function draw() {
-    background(123);
+    drawBackground();
     const genreList = Object.keys(genres);
-    const rows = ceil(genreList.length / 3);
-    const colWidth = width / 3;
-    const rowHeight = height / rows;
+    const cols = Math.max(2, ceil(sqrt(genreList.length)));
+    const rows = ceil(genreList.length / cols);
+    const marginX = width * 0.08;
+    const marginY = height * 0.06;
+    const colWidth = (width - marginX * 2) / cols;
+    const rowHeight = (height - marginY * 2) / rows;
+    const cellPaddingX = colWidth * 0.12;
+    const cellPaddingY = rowHeight * 0.12;
 
     genreList.forEach((genreName, i) => {
-        const x = (i % 3) * colWidth + colWidth / 2;
-        const y = floor(i / 3) * rowHeight + rowHeight / 2;
-        genres[genreName].display(x, y);
+        const col = i % cols;
+        const row = floor(i / cols);
+        const x = marginX + col * colWidth + colWidth / 2;
+        const y = marginY + row * rowHeight + rowHeight / 2;
+        const usableWidth = colWidth - cellPaddingX * 2;
+        const usableHeight = rowHeight - cellPaddingY * 2;
+        const radius = Math.min(usableWidth, usableHeight) * 0.4;
+        genres[genreName].display(x, y, radius, rowHeight);
     });
 
     if (selectedMovie) {
         displayMovieDetails();
+    }
+
+    drawHoverDetails();
+}
+
+/**
+ * Draws a subtle, cinematic background without purple/blue gradients.
+ */
+function drawBackground() {
+    const ctx = drawingContext;
+    const gradient = ctx.createLinearGradient(0, 0, width, height);
+    gradient.addColorStop(0, '#0d1512'); // deep pine
+    gradient.addColorStop(0.6, '#1f2018'); // muted charcoal
+    gradient.addColorStop(1, '#2b1a0f'); // warm umber
+
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, width, height);
+
+    // Subtle vignette for depth
+    noFill();
+    const vignetteColor = color(0, 0, 0, 110);
+    for (let i = 0; i < 10; i++) {
+        stroke(vignetteColor);
+        const inset = i * 18;
+        rect(inset, inset, width - inset * 2, height - inset * 2);
     }
 }
 
@@ -119,6 +160,47 @@ function displayMovieDetails() {
 }
 
 /**
+ * Displays a smooth hover tooltip for the current movie.
+ */
+function drawHoverDetails() {
+    const targetAlpha = hoveredMovie ? 220 : 0;
+    hoverAlpha = lerp(hoverAlpha, targetAlpha, 0.15);
+    if (hoverAlpha < 1) {
+        return;
+    }
+
+    if (hoverTargetX !== null && hoverTargetY !== null) {
+        hoverX = hoverX === null ? hoverTargetX : lerp(hoverX, hoverTargetX, 0.2);
+        hoverY = hoverY === null ? hoverTargetY : lerp(hoverY, hoverTargetY, 0.2);
+    }
+
+    if (!hoveredMovie || hoverX === null || hoverY === null) {
+        return;
+    }
+
+    const padding = 10;
+    textSize(12);
+    textAlign(LEFT, TOP);
+
+    const lines = [
+        hoveredMovie.title,
+        `Popularity: ${hoveredMovie.popularity}`
+    ];
+
+    const lineHeight = 16;
+    const textWidthMax = Math.max(...lines.map(line => textWidth(line)));
+    const boxWidth = textWidthMax + padding * 2;
+    const boxHeight = lines.length * lineHeight + padding * 2;
+
+    noStroke();
+    fill(20, 18, 16, hoverAlpha);
+    rect(hoverX, hoverY, boxWidth, boxHeight, 6);
+
+    fill(240, 235, 225, hoverAlpha);
+    text(lines.join('\n'), hoverX + padding, hoverY + padding);
+}
+
+/**
  * Stores the mouse location and checks if a movie was clicked.
  */
 function mousePressed() {
@@ -133,5 +215,39 @@ function mousePressed() {
 
     // Redraw the canvas to display any updates, such as selected movie details
     redraw();
+}
+
+/**
+ * Tracks hover target and updates smooth tooltip position.
+ */
+function mouseMoved() {
+    const hoverInfo = findHoverTarget(mouseX, mouseY);
+    if (hoverInfo) {
+        hoveredMovie = hoverInfo.movie;
+        hoverTargetX = mouseX + 14;
+        hoverTargetY = mouseY + 14;
+    } else {
+        hoveredMovie = null;
+    }
+}
+
+/**
+ * Finds the closest hovered movie across all genres.
+ * @param {Number} x - Mouse X-coordinate.
+ * @param {Number} y - Mouse Y-coordinate.
+ * @returns {{movie: Movie, distance: Number} | null} Hover info.
+ */
+function findHoverTarget(x, y) {
+    let closest = null;
+    Object.values(genres).forEach(genre => {
+        const info = genre.getHoverMovie(x, y);
+        if (!info) {
+            return;
+        }
+        if (!closest || info.distance < closest.distance) {
+            closest = info;
+        }
+    });
+    return closest;
 }
 

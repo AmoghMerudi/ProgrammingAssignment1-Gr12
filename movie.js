@@ -33,14 +33,11 @@ class Movie {
         const revenueMax = 500000000;
         const normalizedRevenue = constrain(this.revenue / revenueMax, 0, 1);
         const colorStops = [
-            { offset: 0, color: [255, 0, 0] },       // Red
-            { offset: 0.14, color: [255, 165, 0] },  // Orange
-            { offset: 0.28, color: [255, 255, 0] },  // Yellow
-            { offset: 0.42, color: [0, 255, 0] },    // Green
-            { offset: 0.57, color: [0, 0, 255] },    // Blue
-            { offset: 0.71, color: [75, 0, 130] },   // Indigo
-            { offset: 0.85, color: [238, 130, 238] },// Violet
-            { offset: 1, color: [255, 192, 230] }    // Pink
+            { offset: 0, color: [12, 74, 62] },      // Deep teal
+            { offset: 0.25, color: [45, 140, 120] }, // Sea green
+            { offset: 0.5, color: [210, 190, 120] }, // Warm sand
+            { offset: 0.75, color: [240, 140, 80] }, // Amber
+            { offset: 1, color: [230, 90, 85] }      // Coral
         ];
         const [start, end] = this.getColorRange(normalizedRevenue, colorStops); // Get the color range based on normalized revenue
         return this.interpolateColor(normalizedRevenue, start, end); // Interpolate the color between the start and end colors

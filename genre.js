@@ -27,16 +27,27 @@ class Genre {
      * Displays the genre and its movies on the canvas.
      * @param {Number} x - X-coordinate for display.
      * @param {Number} y - Y-coordinate for display.
+     * @param {Number} radius - Radius for the circular layout of stars.
+     * @param {Number} rowHeight - Row height for label spacing.
      */
-    display(x, y) {
+    display(x, y, radius, rowHeight) {
         push();
         translate(x, y);
         textAlign(CENTER);
-        fill(255);
-        textSize(50);
-        text(this.name, 0, 0);
+        const labelSize = Math.max(16, Math.min(34, rowHeight * 0.2));
+        textSize(labelSize);
+        textStyle(BOLD);
+        const labelPaddingX = 14;
+        const labelPaddingY = 8;
+        const labelWidth = textWidth(this.name) + labelPaddingX * 2;
+        const labelHeight = labelSize + labelPaddingY * 2;
+        noStroke();
+        fill(18, 16, 14, 180);
+        rect(-labelWidth / 2, -labelHeight / 2, labelWidth, labelHeight, 8);
 
-        const radius = 400; // Define the radius for the circular layout of stars
+        fill(235, 230, 220);
+        text(this.name, 0, labelSize * 0.35);
+
         const angleStep = TWO_PI / this.movies.length;
         this.starPositions = [];
 
@@ -44,9 +55,17 @@ class Genre {
         this.movies.forEach((movie, i) => {
             const angle = i * angleStep;
             const starX = radius * cos(angle);
-            const starY = radius * sin(angle);
+            const starY = radius * sin(angle) + labelHeight * 0.35;
 
-            fill(movie.getColor()); // Set the fill color based on the movie's revenue
+            const baseColor = color(movie.getColor());
+            noStroke();
+
+            // Soft glow
+            fill(red(baseColor), green(baseColor), blue(baseColor), 40);
+            ellipse(starX, starY, movie.getStarSize() * 2.6);
+
+            // Core star
+            fill(baseColor); // Set the fill color based on the movie's revenue
             noStroke();
             ellipse(starX, starY, movie.getStarSize()); // Draw the star representing the movie
 
@@ -70,5 +89,23 @@ class Genre {
         return this.starPositions.find(
             star => dist(mouseX, mouseY, star.x, star.y) < star.size / 2
         )?.movie || null;
+    }
+
+    /**
+     * Finds the closest hovered movie for smooth hover effects.
+     * @param {Number} mouseX - Mouse X-coordinate.
+     * @param {Number} mouseY - Mouse Y-coordinate.
+     * @returns {{movie: Movie, distance: Number} | null} Hover info.
+     */
+    getHoverMovie(mouseX, mouseY) {
+        let closest = null;
+        this.starPositions.forEach(star => {
+            const distance = dist(mouseX, mouseY, star.x, star.y);
+            const hoverRadius = Math.max(8, star.size * 0.9);
+            if (distance <= hoverRadius && (!closest || distance < closest.distance)) {
+                closest = { movie: star.movie, distance };
+            }
+        });
+        return closest;
     }
 }
